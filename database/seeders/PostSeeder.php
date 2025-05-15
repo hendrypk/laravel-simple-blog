@@ -17,7 +17,7 @@ class PostSeeder extends Seeder
         Post::create([
             'user_id' => 1,
             'title' => 'Active Post',
-            'body' => 'Ini adalah postingan yang aktif',
+            'content' => 'Ini adalah postingan yang aktif',
             'status' => 'active',
             'published_at' => now(),
         ]);
@@ -26,7 +26,7 @@ class PostSeeder extends Seeder
         Post::create([
             'user_id' => 1,
             'title' => 'Scheduled Post',
-            'body' => 'ini adalah postingan yang dijadwalkan',
+            'content' => 'ini adalah postingan yang dijadwalkan',
             'status' => 'scheduled',
             'published_at' => now()->addDays(7), // Set for 7 days in the future
         ]);
@@ -35,7 +35,7 @@ class PostSeeder extends Seeder
         Post::create([
             'user_id' => 1,
             'title' => 'Draft Post',
-            'body' => 'ini adalah postingan masih di draft',
+            'content' => 'ini adalah postingan masih di draft',
             'status' => 'draft',
             'published_at' => null, // Draft posts don't have a publish date
         ]);
