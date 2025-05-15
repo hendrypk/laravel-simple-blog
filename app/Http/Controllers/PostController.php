@@ -6,22 +6,25 @@ use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
 use App\Models\Post;
 use Illuminate\Container\Attributes\Auth;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 
 class PostController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        $posts = Post::with('user')->where('status', Post::TYPE_ACTIVE)->get();
-        return view ('posts.index', compact('posts'));
+    public function index():View
+    {           
+        return view ('posts.index', 
+            ['posts' => Post::where('status', Post::TYPE_ACTIVE)->get()
+        ]);
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create():View
     {
         return view ('posts.create');
     }
@@ -29,30 +32,30 @@ class PostController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StorePostRequest $request)
+    public function store(StorePostRequest $request): RedirectResponse
     {
+        $validated = $request->validated();
+
         if ($request->has('is_draft')) {
             $status = Post::TYPE_DRAFT;
             $publishedAt = null;
-        } elseif (empty($request->published_at)) {
-            $status = Post::TYPE_ACTIVE;
-            $publishedAt = now();
         } else {
-            $status = Post::TYPE_SCHEDULED;
-            $publishedAt = $request->published_at;
+            $publishedAt = $validated['published_at'] ?? now();
+            $status = now()->gte($publishedAt)
+                ? Post::TYPE_ACTIVE
+                : Post::TYPE_SCHEDULED;
         }
 
-        $post = Post::create(
-            [
-                'user_id' => auth()->id(),
-                'title' => $request->title,
-                'content' => $request->content,
-                'published_at' => $publishedAt,
-                'status' => $status
-            ]
-        );
+        $post = Post::create([
+            'user_id' => auth()->id(),
+            'title' => $validated['title'],
+            'content' => $validated['content'],
+            'published_at' => $publishedAt,
+            'status' => $status
+        ]);
 
-        return redirect()->route('posts.show', $post->id)->with('success', 'Post saved successfully.');
+        return to_route('posts.show', $post->id)
+            ->with('success', 'Post saved successfully');
     }
 
 
