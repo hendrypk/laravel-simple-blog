@@ -63,16 +63,16 @@ class PostController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Post $post):View|RedirectResponse
+    public function show(Post $post):View
     {
         if (
-            auth()->guest() &&
+            auth()->guest() || auth()->id() !== $post->user_id &&
             (
                 $post->status !== Post::TYPE_ACTIVE ||
                 ($post->published_at && $post->published_at->isFuture())
             )
         ) {
-            return to_route('login');
+            abort(403, 'Unauthorized');
         }
         return view('posts.show',
             compact('post')
@@ -84,6 +84,10 @@ class PostController extends Controller
      */
     public function edit(Post $post):View
     {
+        if (auth()->id() !== $post->user_id) {
+            abort(403, 'Unauthorized');
+        }
+        
         return view('posts.edit',
             compact('post')
         );
