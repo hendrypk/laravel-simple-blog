@@ -37,11 +37,12 @@
                             ">
                                 {{ $post->status }}
                             </span>
-                            <h3><a href="#" class="text-blue-500">{{ $post->title }}</a></h3>
+                            <h3><a href="{{ route('posts.show', $post->id) }}" class="text-blue-500">{{ $post->title }}</a></h3>
                         </div>
                         <div class="mt-4 flex items-end justify-between">
                             <div>
-                                <div>Published: {{ $post->published_at->format('d M Y') }}</div>
+                                <div>Published: {{ optional($post->published_at)->format('d M Y') }}</div>
+
                                 <div>Updated: {{ $post->updated_at->format('d M Y') }}</div>
                             </div>
                             <div>
