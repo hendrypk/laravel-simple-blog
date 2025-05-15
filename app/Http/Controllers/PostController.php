@@ -7,6 +7,7 @@ use App\Http\Requests\UpdatePostRequest;
 use App\Models\Post;
 use Illuminate\Container\Attributes\Auth;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Response;
 use Illuminate\View\View;
 
 class PostController extends Controller
@@ -62,17 +63,30 @@ class PostController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Post $post)
+    public function show(Post $post):View|RedirectResponse
     {
-        return view('posts.show', compact('post'));
+        if (
+            auth()->guest() &&
+            (
+                $post->status !== Post::TYPE_ACTIVE ||
+                ($post->published_at && $post->published_at->isFuture())
+            )
+        ) {
+            return to_route('login');
+        }
+        return view('posts.show',
+            compact('post')
+        );
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Post $post)
+    public function edit(Post $post):View
     {
-        return view('posts.edit', compact('post'));
+        return view('posts.edit',
+            compact('post')
+        );
     }
 
     /**
