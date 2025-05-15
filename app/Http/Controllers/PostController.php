@@ -96,28 +96,29 @@ class PostController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdatePostRequest $request, Post $post)
+    public function update(UpdatePostRequest $request, Post $post): RedirectResponse
     {
+        $validated = $request->validated();
+
         if ($request->has('is_draft')) {
             $status = Post::TYPE_DRAFT;
             $publishedAt = null;
-        } elseif (empty($request->published_at)) {
-            $status = Post::TYPE_ACTIVE;
-            $publishedAt = now();
         } else {
-            $status = Post::TYPE_SCHEDULED;
-            $publishedAt = $request->published_at;
+            $publishedAt = $validated['published_at'] ?? now();
+            $status = now()->gte($publishedAt)
+                ? Post::TYPE_ACTIVE
+                : Post::TYPE_SCHEDULED;
         }
 
         $post->update([
-            'title' => $request->title,
-            'content' => $request->content,
+            'title' => $validated['title'],
+            'content' => $validated['content'],
             'published_at' => $publishedAt,
             'status' => $status
         ]);
 
-        return redirect()->route('posts.show', $post->id)->with('success', 'Post updated successfully.');
-
+        return to_route('posts.show', $post->id)
+            ->with('success', 'Post updated successfully.');
     }
 
     /**
