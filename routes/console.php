@@ -10,7 +10,7 @@ Artisan::command('inspire', function () {
 
 Artisan::command('posts:publish-scheduled-posts', function () {
     $updated = Post::where('status', Post::TYPE_SCHEDULED)
-        ->where('published_at', '<=', now())
+        ->where('published_at', '>=', now())
         ->update(['status' => Post::TYPE_ACTIVE]);
 
     $this->info("{$updated} post(s) have been activated.");
