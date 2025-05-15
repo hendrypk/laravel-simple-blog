@@ -22,7 +22,7 @@
                         </div>
                     </div>
 
-                    <div> {{ $post->body }} </div>
+                    <div> {{ $post->content }} </div>
                 </section>
             </div>
             <a href="{{ route('posts.index') }}" class="inline-flex gap-2 items-center text-blue-500">
