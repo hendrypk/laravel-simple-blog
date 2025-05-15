@@ -13,18 +13,19 @@ class PostsTest extends TestCase
     /**
      * A basic feature test example.
      */
-    public function test_create_post_page_loads_correctly(): void
+    public function test_create_post_page_is_displayed(): void
     {
         $user = User::factory()->create();
-        $this->actingAs($user); 
 
-        $response = $this->get(route('posts.create'));
+        $respon = $this
+            ->actingAs($user)
+            ->get('/posts/create');
 
-        $response->assertStatus(200);
+        $respon->assertOk();
     }
 
     
-    public function test_store_post_creates_new_post(): void
+    public function test_store_post_creates_new_post_active(): void
     {
         $user = User::factory()->create();
         $this->actingAs($user);
@@ -48,11 +49,13 @@ class PostsTest extends TestCase
         $user = User::factory()->create();
         $this->actingAs($user); 
 
-        $post = Post::factory()->create();
+        $post = Post::factory()->create([
+            'user_id' => $user->id,
+        ]);
 
         $response = $this->get(route('posts.edit', $post->id));
 
-        $response->assertStatus(200);
+        $response->assertOk();
         $response->assertSee($post->title);
         $response->assertSee($post->content);
     }
@@ -86,9 +89,11 @@ class PostsTest extends TestCase
         $user = User::factory()->create();
         $this->actingAs($user); 
 
-        $post = Post::factory()->create();
+        $post = Post::factory()->create([
+            'user_id' => $user->id,
+        ]);
 
-        $response = $this->post(route('posts.destroy', $post->id));
+        $response = $this->delete(route('posts.destroy', $post->id));
         $response->assertRedirect(route('home'));
     }
 }
