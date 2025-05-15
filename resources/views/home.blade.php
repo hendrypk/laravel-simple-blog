@@ -50,6 +50,7 @@
                                 <a href="{{ route('posts.edit', $post->id) }}" class="text-blue-500">Edit</a> /
                                 <form action="{{ route('posts.destroy', $post->id) }}" method="POST" class="inline">
                                     @csrf
+                                    @method('delete')
                                     <button class="text-red-500">Delete</button>
                                 </form>
                             </div>
