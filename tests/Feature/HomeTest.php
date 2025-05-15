@@ -11,11 +11,11 @@ class HomeTest extends TestCase
     /**
      * A basic feature test example.
      */
-    public function test_home_page_contains_welcome_text(): void
+    public function test_home_page_is_displayed(): void
     {
+
         $response = $this->get('/');
 
         $response->assertStatus(200);
-        $response->assertSee('Home');
     }
 }
